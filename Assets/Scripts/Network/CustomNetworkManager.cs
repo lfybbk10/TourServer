@@ -49,6 +49,7 @@ public class CustomNetworkManager : NetworkManager
     public override void OnServerSceneChanged(string sceneName)
     {
         base.OnServerSceneChanged(sceneName);
+        print("instantiate net objs");
         Instantiate(_networkObjects);
     }
 }

@@ -24,6 +24,8 @@ public class CameraForServer : NetworkBehaviour
         base.OnStartServer();
         _cameraComponent = GetComponent<Camera>();
         _cameraComponent.enabled = true;
+        print("start camera server");
+        CameraManager.Instance.AddCamera(ConnectedStudentsManager.Instance.GetStudentByConnection(connectionToClient), this);
     }
 
     [Command]
@@ -34,32 +36,32 @@ public class CameraForServer : NetworkBehaviour
 
     private void Update()
     {
-        if (NetworkServer.active)
-        {
-            Vector3 centerOfScreen = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-
-            Ray ray = _cameraComponent.ScreenPointToRay(centerOfScreen);
-
-            RaycastHit hitInfo;
-            if (Physics.Raycast(ray, out hitInfo))
-            {
-                CubeButtonGaze gazeButton = hitInfo.collider.gameObject.GetComponent<CubeButtonGaze>();
-                if (gazeButton!=null)
-                {
-                    gazeButton.OnGazeEnter();
-                    _activeElements.Add(gazeButton);
-                }
-                else
-                {
-                    _activeElements.ForEach((gaze => gaze.OnGazeExit()));
-                    _activeElements.Clear();
-                }
-            }
-            else
-            {
-                _activeElements.ForEach((gaze => gaze.OnGazeExit()));
-                _activeElements.Clear();
-            }
-        }
+        // if (NetworkServer.active)
+        // {
+        //     Vector3 centerOfScreen = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+        //
+        //     Ray ray = _cameraComponent.ScreenPointToRay(centerOfScreen);
+        //
+        //     RaycastHit hitInfo;
+        //     if (Physics.Raycast(ray, out hitInfo))
+        //     {
+        //         CubeButtonGaze gazeButton = hitInfo.collider.gameObject.GetComponent<CubeButtonGaze>();
+        //         if (gazeButton!=null)
+        //         {
+        //             gazeButton.OnGazeEnter();
+        //             _activeElements.Add(gazeButton);
+        //         }
+        //         else
+        //         {
+        //             _activeElements.ForEach((gaze => gaze.OnGazeExit()));
+        //             _activeElements.Clear();
+        //         }
+        //     }
+        //     else
+        //     {
+        //         _activeElements.ForEach((gaze => gaze.OnGazeExit()));
+        //         _activeElements.Clear();
+        //     }
+        // }
     }
 }

@@ -7,8 +7,11 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Scenes/NetworkMenu.unity
-    guid: 3920c004fde475d4aae9959152fbb4ae
+    guid: 429097f75cab4f149b84566194285624
   - enabled: 1
     path: Assets/Scenes/Scene1.unity
     guid: 88fcd2c6400402e41ad91aac0d3925d1
+  - enabled: 1
+    path: Assets/Scenes/NetworkTiger.unity
+    guid: 31bffb3bd2fbb30448ab6cf702f87eaa
   m_configObjects: {}

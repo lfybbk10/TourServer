@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: c1f5e8bff41aad84a8b384bf5f7f339f
+PluginImporter:
+  serializedVersion: 1
+  iconMap: {}
+  executionOrder: {}
+  isPreloaded: 0
+  platformData:
+    Any:
+      enabled: 0
+      settings: {}
+    Editor:
+      enabled: 0
+      settings:
+        DefaultValueInitialized: true
+    WindowsStoreApps:
+      enabled: 1
+      settings:
+        CPU: x86
+        SDK: UWP
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

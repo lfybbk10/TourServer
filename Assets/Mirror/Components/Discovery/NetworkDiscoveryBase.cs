@@ -49,7 +49,6 @@ namespace Mirror.Discovery
 
         // Each game should have a random unique handshake,
         // this way you can tell if this is the same game or not
-        [HideInInspector]
         public long secretHandshake;
 
         public long ServerId { get; private set; }

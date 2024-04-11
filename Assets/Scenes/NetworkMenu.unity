@@ -761,7 +761,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  secretHandshake: 4254535536564
+  secretHandshake: 210342609193052900
 --- !u!4 &766286705
 Transform:
   m_ObjectHideFlags: 0
@@ -804,7 +804,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6824494914220496014, guid: 593720fa47b3d47408e83c5248418ffa, type: 3}
+  playerPrefab: {fileID: 8804583777703082334, guid: 93cdc998877c2c245b5dbe295b281c95, type: 3}
   autoCreatePlayer: 0
   playerSpawnMethod: 0
   spawnPrefabs: []

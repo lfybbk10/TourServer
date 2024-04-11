@@ -93,6 +93,7 @@ public class MultipleCamerasController : Singleton<MultipleCamerasController>
 
                 // Добавляем обработчик события на нажатие кнопки
                 cameraUIObj.AddButtonListener(() => ClickOnCamera(cams[index].GetComponent<Camera>()));
+                cameraUIObj.AddButtonListener((() => cams[index].GetComponentInParent<NetworkSphere>().UnmutePlayer()));
                 cameraUIObj.SetName(_cameraManager.GetStudentByCam(cams[index]).Name);
                 
                 _uiObjects.Add(cameraUIObj);

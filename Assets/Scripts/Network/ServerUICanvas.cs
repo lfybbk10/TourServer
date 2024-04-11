@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Mirror;
+using RenderHeads.Media.AVProVideo;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -96,9 +97,10 @@ public class ServerUICanvas : Singleton<ServerUICanvas>
         _statisticMode.gameObject.SetActive(false);
         _modeButtonsBg.gameObject.SetActive(false);
         _multipleCamsMode.gameObject.SetActive(true);
-        _ghostMode.gameObject.SetActive(true);
+        //_ghostMode.gameObject.SetActive(true);
         MultipleCamsCanvas.gameObject.SetActive(false);
         //_ghostModeController.IsGhostModeEnabled = false;
+        MuteAllMediaPlayers();
     }
 
     public void StartMultipleMode()
@@ -111,6 +113,7 @@ public class ServerUICanvas : Singleton<ServerUICanvas>
         _ghostMode.gameObject.SetActive(false);
         print("start multi mode");
         MultipleCamerasController.Instance.CalculateCamsRect();
+        MuteAllMediaPlayers();
     }
 
     public void ShowMultipleButton()
@@ -123,5 +126,18 @@ public class ServerUICanvas : Singleton<ServerUICanvas>
     public void Quit()
     {
         ServerChangeSceneController.Instance.ReturnToLobby();
+    }
+
+    public void Restart()
+    {
+        ServerChangeSceneController.Instance.RestartGame();
+    }
+
+    private void MuteAllMediaPlayers()
+    {
+        foreach (var player in FindObjectsOfType<MediaPlayer>())
+        {
+            player.AudioMuted = true;
+        }
     }
 }

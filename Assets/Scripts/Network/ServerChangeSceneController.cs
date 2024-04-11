@@ -51,18 +51,25 @@ public class ServerChangeSceneController : Singleton<ServerChangeSceneController
         {
             NetworkManager.singleton.StopServer();
             Destroy(ServerUICanvas.Instance.gameObject);
-            Destroy(CameraManager.Instance);
+            Destroy(CameraManager.Instance.gameObject);
             Destroy(ConnectedStudentsManager.Instance.gameObject);
             SceneManager.LoadScene(0);
             Destroy(gameObject);
         }
     }
 
+    public void RestartGame()
+    {
+        Destroy(ServerUICanvas.Instance.gameObject);
+        Destroy(CameraManager.Instance.gameObject);
+        StartGame();
+    }
+
     public void StartGame()
     {
         _currState = State.InGame;
         _discovery.enabled = false;
-        NetworkManager.singleton.ServerChangeScene("Scene1");
+        NetworkManager.singleton.ServerChangeScene("NetworkTiger");
     }
 }
 
