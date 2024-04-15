@@ -12,6 +12,8 @@ public class Zones : MonoBehaviour
     [SerializeField] private List<Stage> stages = new List<Stage>();
     [SerializeField] private TMP_Text allQuestionsText;
     [SerializeField] private TMP_Text wrongAnswersText;
+    [SerializeField] private TMP_Text mainQuestion;
+    [SerializeField] private GameObject modePanel;
 
     private int currentStageIndex;
     private int currentQuestionIndex;
@@ -19,51 +21,94 @@ public class Zones : MonoBehaviour
     private int allAnswers = 0,currentAnswers = 0;
     private float nextQuestionTime = 100;
     private string videoFolderPath;
-    private bool isLastAnswer = false;
+    private bool isLastAnswer = false, isStarted = false;
 
-    public Action<AnswerType, bool> OnChoosedAnswer;
+    public Action<AnswerType, bool, int> OnChoosedAnswer;
 
     private bool haveDoneMistake = false;
 
+
+    [HideInInspector] public Mode currentMode;
 
     private void Start()
     {
         currentStageIndex = 0;
         currentQuestionIndex = 0;
-        
-        PlayVideo();
+        mainQuestion.text = "";
+    }
+
+    public void OpenModePanel()
+    {
+        modePanel.SetActive(true);
+        if (mediaPlayer.Control.IsPlaying())
+        {
+            mediaPlayer.Pause();
+        }
+    }
+
+    public void SelectMode(int selectedMode)
+    {
+        currentMode = (Mode)selectedMode;
+        modePanel.SetActive(false);
+        if (mediaPlayer.Control.GetCurrentTime() < nextQuestionTime && !isLastAnswer)
+        {
+            if (!isStarted)
+            {
+                isStarted = true;
+                PlayVideo();
+            }
+            else
+            {
+                mediaPlayer.Play();
+            }
+        }
+        else if (!isStarted)
+        {
+            isStarted = true;
+            PlayVideo();
+        }
+        else if(!isLastAnswer)
+        {
+            PauseVideo();
+        }
+        else
+        {
+            mediaPlayer.Play();
+        }
+
     }
 
     private void PlayVideo()
     {
 #if UNITY_EDITOR
-        videoFolderPath = Application.dataPath+"/TigerVideos/";
+        videoFolderPath = Application.dataPath + "/TigerVideos/";
 #else
-        videoFolderPath = "storage/emulated/0/TigerVideos/";
+videoFolderPath = "storage/emulated/0/TigerVideos/";
 #endif
-        try
-        {
-            var videoPath = videoFolderPath + stages[currentStageIndex].videoCaption;
-            mediaPlayer.OpenMedia(new MediaPath(videoPath, MediaPathType.AbsolutePathOrURL));
-            nextQuestionTime = stages[currentStageIndex].GetNextQuestionTime(currentQuestionIndex);
-            var newQuaternion = mediaPlayer.transform.localRotation;
-            newQuaternion.y = stages[currentStageIndex].GetStartAngle();
-            mediaPlayer.transform.localRotation = newQuaternion;
-            CountAnswers();
-            mediaPlayer.Play();
-        }
-        catch (Exception ex)
-        {
-            FPScounter.Print(ex.ToString());
-        }
+
+        var videoPath = videoFolderPath + stages[currentStageIndex].videoCaption;
+        mediaPlayer.OpenMedia(new MediaPath(videoPath, MediaPathType.AbsolutePathOrURL));
+        nextQuestionTime = stages[currentStageIndex].GetNextQuestionTime(currentQuestionIndex);
+        Vector3 eulerRotation = new Vector3(0, stages[currentStageIndex].GetStartAngle(), 0);
+        mediaPlayer.transform.rotation = Quaternion.Euler(eulerRotation);
+        CountAnswers();
+        mediaPlayer.Play();
     }
 
 
     private void PauseVideo()
     {
         mediaPlayer.Pause();
+        stages[currentStageIndex].HideQuestion(currentQuestionIndex);
         stages[currentStageIndex].gameObject.SetActive(true);
-        stages[currentStageIndex].ShowQuestion(currentQuestionIndex);
+        if (currentMode == Mode.Study)
+        {
+            stages[currentStageIndex].ShowAnswer(currentQuestionIndex);
+        }
+        else
+        {
+            stages[currentStageIndex].ShowQuestion(currentQuestionIndex);
+        }
     }
 
     private void CountAnswers()
@@ -88,19 +133,15 @@ public class Zones : MonoBehaviour
     public void ChooseAnswer(Answer answer)
     {
         print("Выбран ответ"+answer.gameObject.name);
-        OnChoosedAnswer?.Invoke(answer.answerType, answer.isCorrect);
+        OnChoosedAnswer?.Invoke(answer.answerType, answer.isCorrect, answer.parentQuestion.GetIndexByAnswer(answer));
         answer.ResponseProcess(this);
     }
 
 
     public void MakeMistake()
     {
-        if (!haveDoneMistake)
-        {
             wrongAnswers++;
             wrongAnswersText.text = "\nОшибок: " + wrongAnswers;
-            haveDoneMistake = true;
-        }
     }
 
     public void TrueAnswer()
@@ -123,7 +164,6 @@ public class Zones : MonoBehaviour
             isLastAnswer = true;
         }
         stages[currentStageIndex].gameObject.SetActive(false);
-        haveDoneMistake = false;
         ReturnVideo();
     }
 
@@ -133,9 +173,9 @@ public class Zones : MonoBehaviour
         if (currentStageIndex < stages.Count - 1)
         {
             mediaPlayer.CloseMedia();
+            stages[currentStageIndex].gameObject.SetActive(false);
             currentStageIndex++;
             currentQuestionIndex = 0;
-            haveDoneMistake = false;
             isLastAnswer = false;
             PlayVideo();
         }
@@ -169,6 +209,36 @@ public class Zones : MonoBehaviour
     {
         Application.Quit();
     }
+
+
+    public Question GetCurrentQuestion() => stages[currentStageIndex].GetQuestionAt(currentQuestionIndex);
+
     
+    public void Restart()
+    {
+        isLastAnswer = false;
+        mediaPlayer.Pause();
+        stages[currentStageIndex].HideQuestion(currentQuestionIndex);
+        currentAnswers = 0;
+        currentQuestionIndex = 0;
+        currentStageIndex = 0;
+        wrongAnswers = 0;
+        wrongAnswersText.text = "\nОшибок: " + wrongAnswers;
+        allQuestionsText.text = "Ответов: " + currentAnswers + "/" + allAnswers;
+        foreach(var stage in stages)
+        {
+            stage.gameObject.SetActive(false);
+        }
+        isStarted = false;
+        OpenModePanel();
+        mainQuestion.text = "";
+    }
+}
+
+public enum Mode
+{
+    Study,
+    Test,
+    Exam
 }
 

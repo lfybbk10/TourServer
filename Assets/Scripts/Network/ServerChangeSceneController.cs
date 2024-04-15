@@ -4,6 +4,7 @@ using Mirror;
 using Mirror.Discovery;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ServerChangeSceneController : Singleton<ServerChangeSceneController>
 {
@@ -15,6 +16,8 @@ public class ServerChangeSceneController : Singleton<ServerChangeSceneController
 
     private State _currState = State.InLobby;
     private NetworkDiscovery _discovery;
+    
+    [SerializeField] private Dropdown _dropdownGamemode;
 
     private void Start()
     {
@@ -29,14 +32,13 @@ public class ServerChangeSceneController : Singleton<ServerChangeSceneController
 
     private void SceneChanged(Scene currScene, Scene nextScene)
     {
-        if (nextScene.buildIndex != 0)
+        
+        if (_currState == State.InGame && nextScene.buildIndex == 0)
         {
-            if (_currState == State.InGame)
-            {
-                _currState = State.InLobby;
-                _discovery.enabled = true;
-            }
+            _currState = State.InLobby;
+            _discovery.enabled = true;
         }
+        
     }
 
     private void OnDisable()
@@ -69,6 +71,11 @@ public class ServerChangeSceneController : Singleton<ServerChangeSceneController
     {
         _currState = State.InGame;
         _discovery.enabled = false;
+        NetworkGameMode.Instance.GameMode = _dropdownGamemode.value;
+        NetworkServer.SendToAll(new GamemodeMessage()
+        {
+            gameMode = _dropdownGamemode.value
+        });
         NetworkManager.singleton.ServerChangeScene("NetworkTiger");
     }
 }

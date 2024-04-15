@@ -22,12 +22,12 @@ public class MenuActivator : MonoBehaviour
 		fillImage.fillAmount = 0;
 		fillImageParent = fillImage.transform.parent.gameObject;
 		fillImageParent.SetActive(false);
-		menu.SetActive(false);
+		//menu.SetActive(false); //Временно меняем стратегию, на очках не работает удержание кнопки Fire1 и нет кнопки Cancel
 	}
 
 	private void Update()
 	{
-		if (Input.GetButtonDown("Fire1"))
+        /*if (Input.GetButtonDown("Fire1"))
 		{
 			buttonPressed = true; // надо добавить проверку на то что курсор не смотрит на интерактивный объект
 
@@ -74,8 +74,15 @@ public class MenuActivator : MonoBehaviour
 					holdTime = 0;
 				}
 			}
-		}
-	}
+		}*/
+        if (Input.GetButton("Cancel"))
+		{
+            if (menu.activeInHierarchy) CloseMenu();
+            ActivateMenu();
+        }
+
+
+    }
 
 	public void ActivateMenu()
 	{

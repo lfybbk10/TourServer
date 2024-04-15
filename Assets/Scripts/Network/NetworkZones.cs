@@ -17,12 +17,29 @@ public class NetworkZones : NetworkBehaviour
         _zones.OnChoosedAnswer -= ChooseAnswer;
     }
 
+    private void Start()
+    {
+        _zones.SelectMode(NetworkGameMode.Instance.GameMode);
+    }
+
+    private void SelectMode(int mode)
+    {
+        _zones.SelectMode(mode);
+    }
+
     [Command]
-    private void ChooseAnswer(AnswerType answerType, bool isCorrect)
+    private void ChooseAnswer(AnswerType answerType, bool isCorrect, int index)
     {
         if (!isCorrect)
         {
             _zones.MakeMistake();
+            _zones.GetCurrentQuestion().GetAnswerByIndex(index).gameObject.SetActive(false);
+            return;
+        }
+        _zones.GetCurrentQuestion().correctAnswers--;
+        if (_zones.GetCurrentQuestion().correctAnswers > 0)
+        {
+            _zones.GetCurrentQuestion().GetAnswerByIndex(index).gameObject.SetActive(false);
             return;
         }
         _zones.TrueAnswer();

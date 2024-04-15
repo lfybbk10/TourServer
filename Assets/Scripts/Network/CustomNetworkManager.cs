@@ -5,7 +5,6 @@ using UnityEngine;
 public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private GameObject _networkObjects;
-
     public override void Awake()
     {
         base.Awake();

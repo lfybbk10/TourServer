@@ -15,6 +15,7 @@ public class ServerUICanvas : Singleton<ServerUICanvas>
     [SerializeField] private GameObject _statisticWindowPrefab;
     [SerializeField] private StatisticStudentString _statisticStudentStringPrefab;
     [SerializeField] private Canvas _ghostModeCanvas;
+    [SerializeField] private Dropdown _gameModeDropdown;
     public Canvas MultipleCamsCanvas;
 
     private GameObject _statisticWindow;
@@ -26,6 +27,8 @@ public class ServerUICanvas : Singleton<ServerUICanvas>
         base.Awake();
         InitStatisticWindow();
         StartMultipleMode();
+        _gameModeDropdown.value = NetworkGameMode.Instance.GameMode;
+        _gameModeDropdown.RefreshShownValue();
     }
 
     private void OnEnable()
@@ -139,5 +142,14 @@ public class ServerUICanvas : Singleton<ServerUICanvas>
         {
             player.AudioMuted = true;
         }
+    }
+
+    public void SaveGameMode()
+    {
+        NetworkGameMode.Instance.SetGameMode(_gameModeDropdown.value);
+        NetworkServer.SendToAll(new GamemodeMessage()
+        {
+            gameMode = _gameModeDropdown.value
+        });
     }
 }
